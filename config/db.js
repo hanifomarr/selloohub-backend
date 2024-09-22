@@ -1,13 +1,8 @@
-import mongoose from "mongoose";
+const { Sequelize } = require("sequelize");
+const config = require("./config");
 
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
-    console.log(`MongoDB Connected : ${conn.connection.host}`);
-  } catch (error) {
-    console.log(error);
-    process.exit(1);
-  }
-};
+const env = process.env.NODE_ENV || "development";
 
-export default connectDB;
+const sequelize = new Sequelize(config[env]);
+
+module.exports = sequelize;
