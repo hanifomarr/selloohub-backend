@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const user = require("../db/models/user");
+const bcrypt = require("bcrypt");
 const asyncHandler = require("../middleware/asyncHandler");
 
 const generateToken = (payload) => {
@@ -8,6 +9,9 @@ const generateToken = (payload) => {
   });
 };
 
+// @desc   Post signup
+// @route  POST /api/v1/auth/signup
+// @access public
 const signup = asyncHandler(async (req, res, next) => {
   const body = req.body;
 
@@ -49,4 +53,34 @@ const signup = asyncHandler(async (req, res, next) => {
   });
 });
 
-module.exports = { signup };
+// @desc   Post login
+// @route  POST /api/v1/auth/login
+// @access public
+const login = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Please provide email and password",
+    });
+  }
+
+  const result = await user.findOne({ where: { email } });
+
+  if (!result || !(await bcrypt.compare(password, result.password))) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Incorrect email and password",
+    });
+  }
+
+  const token = generateToken({ id: result.id });
+
+  return res.json({
+    status: "success",
+    token,
+  });
+});
+
+module.exports = { signup, login };
