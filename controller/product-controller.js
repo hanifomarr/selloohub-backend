@@ -1,26 +1,41 @@
-import asyncHandler from "../middleware/asyncHandler.js";
-import Product from "../models/product-model.js";
+const product = require("../db/models/product.js");
+const asyncHandler = require("../middleware/asyncHandler");
 
-// @desc   Fetch list of products
+// @desc   Create products
+// @route  POST /api/product
+// @access admin
+const createProduct = asyncHandler(async (req, res) => {
+  const body = req.body;
+  const { id } = req.user;
+
+  const newProduct = await product.create({
+    name: body.name,
+    productImage: body.productImage,
+    price: body.price,
+    shortDescription: body.shortDescription,
+    description: body.description,
+    productUrl: body.productUrl,
+    category: body.category,
+    tags: body.tags,
+    createdBy: id,
+  });
+
+  return res.status(201).json({
+    status: "success",
+    data: newProduct,
+  });
+});
+
+// @desc   View list of products
 // @route  GET /api/product
-// @access public
-const getProduct = asyncHandler(async (req, res) => {
-  const products = await Product.find({});
-  res.json(products);
+// @access admin
+const getAllProduct = asyncHandler(async (req, res, next) => {
+  const result = await product.findAll();
+
+  return res.json({
+    status: "success",
+    data: result,
+  });
 });
 
-// @desc   Fetch a product
-// @route  GET /api/product/:id
-// @access public
-const getProductById = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id);
-
-  if (product) {
-    return res.json(product);
-  } else {
-    res.status(404);
-    throw new Error("Product not Found");
-  }
-});
-
-export { getProduct, getProductById };
+module.exports = { createProduct, getAllProduct };
