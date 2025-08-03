@@ -1,17 +1,24 @@
 /**
  * Node modules
  */
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import { CorsOptions } from 'cors';
 /**
  * Custom modules
  */
 import config from '@/config';
 import limiter from '@/lib/express_rate_limit';
-import { CorsOptions } from 'cors';
+import connectToMongoDB from '@/db/mongo';
+
+/**
+ * Routes
+ */
+import v1Routes from '@/routes/v1';
+import connectToMySQL from './db/mysql';
 
 /**
  * Server setup
@@ -60,20 +67,35 @@ const corsOptions: CorsOptions = {
 //Apply CORS middleware
 app.use(cors(corsOptions));
 
-(async () => {
+async function startServer() {
   try {
-    app.get('/', (req: Request, res: Response) => {
-      res.send('API is running');
+    // Connect to both databases
+    await connectToMySQL();
+    await connectToMongoDB();
+
+    // Start server
+    app.listen(config.PORT, () => {
+      console.log(`Server running on port ${config.PORT}`);
     });
-
-    app.listen(config.PORT, () =>
-      console.log(`Server running on port ${config.PORT}`),
-    );
   } catch (error) {
-    console.log('Error starting server:', error);
-
+    console.error('Error during server startup:', error);
     if (config.NODE_ENV === 'production') {
-      process.exit(1); // Exit the process in production on error
+      process.exit(1);
     }
   }
-})();
+}
+
+startServer();
+
+const handleServerShutdown = async () => {
+  try {
+    console.log('Server is shutting down');
+    process.exit(0);
+  } catch (error) {
+    console.error('Error during server shutdown:', error);
+    process.exit(1); // Exit with error code if shutdown fails
+  }
+};
+
+process.on('SIGTERM', handleServerShutdown);
+process.on('SIGINT', handleServerShutdown);
