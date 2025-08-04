@@ -17,8 +17,8 @@ import connectToMongoDB from '@/db/mongo';
 /**
  * Routes
  */
-import v1Routes from '@/routes/v1';
 import connectToMySQL from './db/mysql';
+import productRoutes from './routes/v1/product/product.route';
 
 /**
  * Server setup
@@ -72,6 +72,8 @@ async function startServer() {
     // Connect to both databases
     await connectToMySQL();
     await connectToMongoDB();
+
+    app.use('/api/v1', productRoutes);
 
     // Start server
     app.listen(config.PORT, () => {
