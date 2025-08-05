@@ -20,6 +20,7 @@ import connectToMongoDB from '@/db/mongo';
 import connectToMySQL from './db/mysql';
 import productRoutes from './routes/v1/product/product.route';
 import authRoutes from '@/routes/v1/auth/auth.route';
+import userRoutes from '@/routes/v1/user';
 import { syncModels } from '@/models';
 
 /**
@@ -78,6 +79,7 @@ async function startServer() {
 
     app.use('/api/v1/product', productRoutes);
     app.use('/api/v1/auth', authRoutes);
+    app.use('/api/v1/user', userRoutes);
 
     // Start server
     app.listen(config.PORT, () => {
