@@ -1,9 +1,8 @@
-import sequelize from '@/config/mysql.config';
+import { AppDataSource } from '@/data-source';
 
 async function connectToMySQL() {
   try {
-    await sequelize.authenticate();
-    await sequelize.sync();
+    await AppDataSource.initialize()
     console.log('MySQL connected');
   } catch (error) {
     console.error('MySQL connection error:', error);

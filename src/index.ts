@@ -13,15 +13,14 @@ import { CorsOptions } from 'cors';
 import config from '@/config';
 import limiter from '@/lib/express_rate_limit';
 import connectToMongoDB from '@/db/mongo';
+import connectToMySQL from '@/db/mysql';
 
 /**
  * Routes
  */
-import connectToMySQL from './db/mysql';
-import productRoutes from './routes/v1/product/product.route';
+import productRoutes from '@/routes/v1/product/product.route';
 import authRoutes from '@/routes/v1/auth/auth.route';
 import userRoutes from '@/routes/v1/user';
-import { syncModels } from '@/models';
 
 /**
  * Server setup
@@ -70,12 +69,12 @@ const corsOptions: CorsOptions = {
 //Apply CORS middleware
 app.use(cors(corsOptions));
 
+//start server
 async function startServer() {
   try {
     // Connect to both databases
     await connectToMySQL();
     await connectToMongoDB();
-    await syncModels();
 
     app.use('/api/v1/product', productRoutes);
     app.use('/api/v1/auth', authRoutes);
