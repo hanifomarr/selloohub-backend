@@ -91,3 +91,8 @@ dist/
 *.tsbuildinfo
 
 # IDE / Editor
+.idea/
+.vscode/
+build/
+tmp/
+temp/
