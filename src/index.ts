@@ -18,6 +18,7 @@ import connectToMySQL from '@/db/mysql';
 /**
  * Routes
  */
+import authRouter from "@/route/auth.route"
 
 /**
  * Server setup
@@ -72,6 +73,8 @@ async function startServer() {
     // Connect to both databases
     await connectToMySQL();
     await connectToMongoDB();
+
+    app.use("/api/v1/auth", authRouter)
 
     // Start server
     app.listen(config.PORT, () => {
