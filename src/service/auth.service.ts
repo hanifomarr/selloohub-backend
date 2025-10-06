@@ -1,4 +1,5 @@
 import { AppDataSource } from "@/data-source"
+import { LoginDto } from "@/dto/auth/login-user.dto";
 import { RegisterDto } from "@/dto/auth/register-user.dto";
 import { ResponseUserDto } from "@/dto/auth/response-user.dto";
 import { User } from "@/entity/user.entity";
@@ -27,7 +28,7 @@ class AuthService {
         return new ResponseUserDto(savedUser, token)
     }
 
-    async Login(data: { email: string, password: string }) {
+    async Login(data: LoginDto) {
 
         const user = await userRepository.findOneBy({ email: data.email })
         if (!user) throw new Error("Invalid email or password")
@@ -35,9 +36,8 @@ class AuthService {
         const isPasswordValid = await comparePassword(data.password, user.password)
         if (!isPasswordValid) throw new Error("Invalid email or password")
 
-
         const token = await generateToken({ id: user.id, email: user.email })
-        return { user, token }
+        return new ResponseUserDto(user, token)
 
     }
 }
