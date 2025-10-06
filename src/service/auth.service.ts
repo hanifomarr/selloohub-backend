@@ -1,12 +1,15 @@
 import { AppDataSource } from "@/data-source"
+import { RegisterDto } from "@/dto/auth/register-user.dto";
+import { ResponseUserDto } from "@/dto/auth/response-user.dto";
+import { User } from "@/entity/user.entity";
 import { comparePassword, hashPassword } from "@/util/bcrypt.util";
 import { generateToken } from "@/util/jwt.util";
 
-const userRepository = AppDataSource.getRepository("User");
+const userRepository = AppDataSource.getRepository(User);
 
 class AuthService {
 
-    async Register(data: { email: string, password: string }) {
+    async Register(data: RegisterDto) {
 
         const existingUser = await userRepository.findOneBy({ email: data.email })
 
@@ -19,11 +22,9 @@ class AuthService {
 
         const savedUser = await userRepository.save(newUser)
 
-        delete savedUser.password
-
         const token = await generateToken({ id: savedUser.id, email: savedUser.email })
 
-        return { user: savedUser, token }
+        return new ResponseUserDto(savedUser, token)
     }
 
     async Login(data: { email: string, password: string }) {
@@ -34,7 +35,6 @@ class AuthService {
         const isPasswordValid = await comparePassword(data.password, user.password)
         if (!isPasswordValid) throw new Error("Invalid email or password")
 
-        delete user.password
 
         const token = await generateToken({ id: user.id, email: user.email })
         return { user, token }
