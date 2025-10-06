@@ -1,5 +1,5 @@
 import { AppDataSource } from "@/data-source"
-import { hashPassword } from "@/util/bcrypt.util";
+import { comparePassword, hashPassword } from "@/util/bcrypt.util";
 import { generateToken } from "@/util/jwt.util";
 
 const userRepository = AppDataSource.getRepository("User");
@@ -24,6 +24,21 @@ class AuthService {
         const token = await generateToken({ id: savedUser.id, email: savedUser.email })
 
         return { user: savedUser, token }
+    }
+
+    async Login(data: { email: string, password: string }) {
+
+        const user = await userRepository.findOneBy({ email: data.email })
+        if (!user) throw new Error("Invalid email or password")
+
+        const isPasswordValid = await comparePassword(data.password, user.password)
+        if (!isPasswordValid) throw new Error("Invalid email or password")
+
+        delete user.password
+
+        const token = await generateToken({ id: user.id, email: user.email })
+        return { user, token }
+
     }
 }
 
