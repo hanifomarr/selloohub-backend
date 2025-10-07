@@ -1,9 +1,9 @@
-name: '${COMPOSE_PROJECT_NAME:-your_project}'
+name: '${COMPOSE_PROJECT_NAME:-project}'
 
 services:
   mysql:
     image: mysql:8.0.39 # swap back to 8.4 later
-    container_name: '${COMPOSE_PROJECT_NAME:-your_project}-mysql'
+    container_name: '${COMPOSE_PROJECT_NAME:-project}-mysql'
     platform: linux/arm64/v8
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -30,7 +30,7 @@ services:
 
   mongo:
     image: mongo:7
-    container_name: '${COMPOSE_PROJECT_NAME:-your_project}-mongo'
+    container_name: '${COMPOSE_PROJECT_NAME:-project}-mongo'
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
