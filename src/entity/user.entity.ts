@@ -1,4 +1,4 @@
-import { Merchant } from '../module/merchant/merchant.entity';
+import { Merchant } from './merchant.entity';
 import { Length } from 'class-validator';
 import {
   Column,

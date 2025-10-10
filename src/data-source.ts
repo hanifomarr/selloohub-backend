@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import config from './config/index';
 import { User } from './entity/user.entity';
-import { Merchant } from './module/merchant/merchant.entity';
+import { Merchant } from './entity/merchant.entity';
 
 export const AppDataSource = new DataSource({
   type: 'mysql',

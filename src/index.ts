@@ -18,7 +18,8 @@ import connectToMySQL from '@/db/mysql';
 /**
  * Routes
  */
-import authRouter from "@/route/auth.route"
+import authRouter from '@/module/auth/auth.route';
+import merchantRoute from '@/module/merchant/merchant.route';
 
 /**
  * Server setup
@@ -74,7 +75,8 @@ async function startServer() {
     await connectToMySQL();
     await connectToMongoDB();
 
-    app.use("/api/v1/auth", authRouter)
+    app.use('/api/v1/auth', authRouter);
+    app.use('/api/v1/merchants', merchantRoute);
 
     // Start server
     app.listen(config.PORT, () => {
