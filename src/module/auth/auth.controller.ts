@@ -1,48 +1,38 @@
-import { LoginDto } from '@/dto/auth/login-user.dto';
-import { RegisterDto } from '@/dto/auth/register-user.dto';
-import { plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
 import { Request, Response } from 'express';
 import { authService } from './auth.service';
+import { BaseController } from '@/core/base.controller';
+import { ResponseUserDto } from '@/dto/auth/response-user.dto';
 
-export const register = async (req: Request, res: Response) => {
-  const registerDto = plainToInstance(RegisterDto, req.body);
-  const error = await validate(registerDto);
+class AuthController extends BaseController {
+  register = async (req: Request, res: Response) => {
+    try {
+      const newUser = await authService.Register(req.body);
 
-  if (error.length > 0) {
-    const formatedError = error
-      .map((err) => {
-        return Object.values(err.constraints || {});
-      })
-      .flat();
+      return this.success(
+        res,
+        'Merchant created successfully',
+        newUser,
+        ResponseUserDto,
+        200,
+      );
+    } catch (error: any) {
+      return this.error(res, error.message, 400);
+    }
+  };
 
-    return res.status(400).json({ status: 'error', error: formatedError });
-  }
+  login = async (req: Request, res: Response) => {
+    try {
+      const user = await authService.Login(req.body);
+      return this.success(
+        res,
+        'User login successfully',
+        user,
+        ResponseUserDto,
+      );
+    } catch (error: any) {
+      return this.error(res, error.message, 400);
+    }
+  };
+}
 
-  try {
-    const result = await authService.Register(registerDto);
-    res.status(201).json(result);
-  } catch (error: any) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-export const login = async (req: Request, res: Response) => {
-  const loginDto = plainToInstance(LoginDto, req.body);
-  const error = await validate(loginDto);
-  if (error.length > 0) {
-    const formatedError = error
-      .map((err) => {
-        return Object.values(err.constraints || {});
-      })
-      .flat();
-    return res.status(400).json({ status: 'error', error: formatedError });
-  }
-
-  try {
-    const result = await authService.Login(req.body);
-    res.status(201).json(result);
-  } catch (error: any) {
-    res.status(401).json({ message: error.message });
-  }
-};
+export const authController = new AuthController();

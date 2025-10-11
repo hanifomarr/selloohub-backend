@@ -1,15 +1,8 @@
-import { User } from "@/entity/user.entity";
+import { Expose } from 'class-transformer';
 
 export class ResponseUserDto {
-    id: number;
-    name?: string;
-    email: string;
-    token?: string;
-
-    constructor(user: User, token?: string) {
-        this.id = user.id;
-        this.name = user.name;
-        this.email = user.email
-        this.token = token
-    }
+  @Expose() id!: number;
+  @Expose() name?: string;
+  @Expose() email!: string;
+  @Expose() token!: string;
 }
