@@ -20,6 +20,7 @@ import connectToMySQL from '@/db/mysql';
  */
 import authRouter from '@/module/auth/auth.route';
 import merchantRoute from '@/module/merchant/merchant.route';
+import productRoute from './module/product/product.route';
 
 /**
  * Server setup
@@ -77,6 +78,7 @@ async function startServer() {
 
     app.use('/api/v1/auth', authRouter);
     app.use('/api/v1/merchants', merchantRoute);
+    app.use('/api/v1/products', productRoute);
 
     // Start server
     app.listen(config.PORT, () => {
